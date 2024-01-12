@@ -17,9 +17,18 @@ export default function StarRating({
   className = "",
   messages = [],
   defaultRating=0,
+  onSetRating,
 }) {
   const [rating, setRating] = useState(defaultRating);
   const [tempRating, setTempRating] = useState(0);
+
+function handleRating(rating) {
+  
+    setRating(rating+1);
+    onSetRating(rating+1);
+  
+ 
+}
 
   const textStyle = {
     lineHeight: "1",
@@ -37,7 +46,7 @@ export default function StarRating({
         {Array.from({ length: maxRating }, (v, i) => (
           <Star
             key={i}
-            onRate={() => setRating(i + 1)}
+            onRate={()=>handleRating(i)}
             full={tempRating ? tempRating >= i + 1 : rating >= i + 1}
             onHoverIn={() => setTempRating(i + 1)}
             onHoverOut={() => setTempRating(0)}
@@ -87,7 +96,7 @@ function Star({ onRate, full, onHoverIn, onHoverOut, color, size }) {
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          stroke="#000"
+          stroke={color}
         >
           <path
             strokeLinecap="round"
