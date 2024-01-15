@@ -56,7 +56,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const query = "interstellar";
+  const query = "gugkjgkj";
 
 useEffect(function() {
   
@@ -69,11 +69,15 @@ useEffect(function() {
     ("Something went wrong in fetching movies");
 
     const data = await res.json();
+    if(data.Response==="False") throw new Error("Movie not found");
     setMovies(data.Search);
-    setIsLoading(false);  
+    console.log(data);
+    
   } catch (err) {
     console.log(err.message);
     setError(err.message);
+  } finally{
+    setIsLoading(false);
   }
   }  
   fetchMovies();
@@ -90,7 +94,10 @@ useEffect(function() {
 
       <Main>
         <Box>
-          {isLoading ? <Loader /> : <MovieList movies={movies} />}
+          {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
+          {isLoading && <Loader />}
+          {!isLoading && !error && <MovieList movies={movies} />}
+          {error && <ErrorMessage message={error} /> }
         </Box>
 
         <Box>
