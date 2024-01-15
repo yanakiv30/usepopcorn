@@ -52,34 +52,26 @@ const average = (arr) =>
 
 const KEY = "69fcf81a"
 export default function App() {
-  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const tempQuery = "interstellar";
+  const query = "interstellar";
 
-useEffect(function() { 
-console.log('A')
-},[]);
-useEffect(function () {
-  console.log('B')
-});
-console.log('C')
-
-useEffect(function() {  
+useEffect(function() {
+  
   async function fetchMovies() {
     try {
     setIsLoading(true);
-    const res = await fetch
-    (`http://www.omdbapi.com/?apikey=${KEY}&s=${tempQuery}`);
+    const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
     
     if(!res.ok) throw new Error
     ("Something went wrong in fetching movies");
 
     const data = await res.json();
     if(data.Response==="False") throw new Error("Movie not found");
-    setMovies(data.Search);  
+    setMovies(data.Search);
+    console.log(data);
     
   } catch (err) {
     console.log(err.message);
@@ -96,7 +88,7 @@ useEffect(function() {
   return ( 
     <>
       <NavBar>
-        <Search query={query} setQuery={setQuery}/>
+        <Search />
         <NumResults movies={movies} />
       </NavBar>
 
@@ -145,8 +137,8 @@ function Logo() {
   );
 }
 
-function Search({query, setQuery}) {
-  
+function Search() {
+  const [query, setQuery] = useState("");
   return (
     <input
       className="search"
