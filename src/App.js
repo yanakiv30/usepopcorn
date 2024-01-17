@@ -70,7 +70,7 @@ export default function App() {
   // console.log('During Render')
 
   function handleSelectMovie(id) {
-    setSelectedId((selectedId) => id === selectedId ? null : id);
+    setSelectedId((selectedId) => (id === selectedId ? null : id));
   }
   function handleCloseMovie() {
     setSelectedId(null);
@@ -93,7 +93,7 @@ export default function App() {
           const data = await res.json();
           if (data.Response === "False") throw new Error("Movie not found");
           setMovies(data.Search);
-          console.log(data.Search)
+          console.log(data.Search);
         } catch (err) {
           console.log(err.message);
           setError(err.message);
@@ -109,7 +109,6 @@ export default function App() {
       }
 
       fetchMovies();
-
     },
     [query]
   );
@@ -125,13 +124,18 @@ export default function App() {
         <Box>
           {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
           {isLoading && <Loader />}
-          {!isLoading && !error && <MovieList movies={movies} onSelectMovie={handleSelectMovie} />}
+          {!isLoading && !error && (
+            <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
+          )}
           {error && <ErrorMessage message={error} />}
         </Box>
 
         <Box>
           {selectedId ? (
-            <MovieDetails selectedId={selectedId} onCloseMovie={handleCloseMovie} />
+            <MovieDetails
+              selectedId={selectedId}
+              onCloseMovie={handleCloseMovie}
+            />
           ) : (
             <>
               <WatchedSummary watched={watched} />
@@ -217,7 +221,6 @@ function MovieList({ movies, onSelectMovie }) {
     <ul className="list list-movies">
       {movies?.map((movie) => (
         <Movie movie={movie} key={movie.imdbID} onSelectMovie={onSelectMovie} />
-
       ))}
     </ul>
   );
@@ -235,52 +238,80 @@ function Movie({ movie, onSelectMovie }) {
         </p>
       </div>
     </li>
-  )
-
-
+  );
 }
 
 function MovieDetails({ selectedId, onCloseMovie }) {
   const [movie, setMovie] = useState({});
-  const { Title: title, Year: year, Poster: poster, Runtime: runtime, imdbRating, Plot: plot,
-    Released: released, Actors: actors, Director: director, Genre: genre, } = movie;
-  console.log(title, year)
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    Title: title,
+    Year: year,
+    Poster: poster,
+    Runtime: runtime,
+    imdbRating,
+    Plot: plot,
+    Released: released,
+    Actors: actors,
+    Director: director,
+    Genre: genre,
+  } = movie;
+  console.log(title, year);
 
-  useEffect(function () {
-    async function getMovieDetails() {
-      const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
-      );
-      const data = await res.json();
-      setMovie(data);
-    }
-    getMovieDetails();
-  }, []);
-
+  useEffect(
+    function () {
+      async function getMovieDetails() {
+        setIsLoading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+        );
+        const data = await res.json();
+        setMovie(data);
+        setIsLoading(false);
+      }
+      getMovieDetails();
+    },
+    [selectedId]
+  );
 
   return (
     <div className="details">
-      <header>
-        <button className="btn-back" onClick={() => onCloseMovie()}>&larr;</button>
-        <img src={poster} alt={`Poster of ${movie}`} />
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <header>
+            <button className="btn-back" onClick={() => onCloseMovie()}>
+              &larr;
+            </button>
+            <img src={poster} alt={`Poster of ${movie}`} />
 
-        <div className="details-overview">
-          <h2>{title}</h2>
-          <p>{released} &bull; {runtime}</p>
-          <p>{genre}</p>
-          <p><span>⭐</span>{imdbRating} IMDb rating</p>
-        </div>
-      </header>
+            <div className="details-overview">
+              <h2>{title}</h2>
+              <p>
+                {released} &bull; {runtime}
+              </p>
+              <p>{genre}</p>
+              <p>
+                <span>⭐</span>
+                {imdbRating} IMDb rating
+              </p>
+            </div>
+          </header>
 
-      <section>
-        <div className="rating">
-        <StarRating maxRating = {10} size ={24}/>
-        </div>
-        
-        <p><em>{plot}</em></p>
-        <p>Starring {actors}</p>
-        <p>Directed by {director}</p>
-      </section>    
+          <section>
+            <div className="rating">
+              <StarRating maxRating={10} size={24} />
+            </div>
+
+            <p>
+              <em>{plot}</em>
+            </p>
+            <p>Starring {actors}</p>
+            <p>Directed by {director}</p>
+          </section>
+        </>
+      )}
     </div>
   );
 }
