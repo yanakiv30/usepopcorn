@@ -52,14 +52,12 @@ const average = (arr) =>
 
 const KEY = "69fcf81a";
 export default function App() {
-  console.log("render");
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-
 
   // useEffect(function() {
   // console.log('After initial render')
@@ -293,11 +291,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     Genre: genre,
   } = movie;
 
-  // const isTop= imdbRating>8;
-  // console.log(isTop);
-
-  const [avgRating, setAvgRating] = useState(0);
-
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -310,15 +303,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     };
 
     onAddWatched(newWatchedMovie);
-    // onCloseMovie();
-
-     setAvgRating(+imdbRating);
-   
-    setAvgRating((avgRating) => (avgRating + userRating) / 2);
-
-  
-    
-
+    onCloseMovie();
   }
 
 
@@ -390,11 +375,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
               </p>
             </div>
           </header>
-
-          
-
-          <p>{avgRating}</p>
-        
 
           <section>
             <div className="rating">
