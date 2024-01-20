@@ -46,13 +46,11 @@ const tempWatchedData = [
     userRating: 9,
   },
 ];
-
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-
 const KEY = "69fcf81a";
 export default function App() {
-  console.log("render");
+  
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   // const [watched, setWatched] = useState([]);
@@ -60,8 +58,9 @@ export default function App() {
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
   const [watched, setWatched] = useState(function() {
-    const storedValue = localStorage.getItem("watched");
-    return JSON.parse(storedValue);
+    const storedValue = localStorage.getItem("watched") ? 
+    JSON.parse(localStorage.getItem("watched")) : [];
+    return storedValue;
   });
 
   // useEffect(function() {
@@ -91,10 +90,31 @@ export default function App() {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
+  useEffect(() => {
+    const currentTime = new Date().toLocaleTimeString();
+    const currentMilliseconds = Date.now();
+    console.log(`Component is mounted at ${currentTime}, ${currentMilliseconds} milliseconds`);
+ 
+   },[]); // Empty dependency array means this effect runs once after the initial render
+
+  useEffect(() => {
+    const currentTime = new Date().toLocaleTimeString();
+    const currentMilliseconds = Date.now();
+    console.log(`Component is render(every) at ${currentTime}, ${currentMilliseconds} milliseconds`);
+  });
+   
+   const currentTime = new Date().toLocaleTimeString();
+   const currentMilliseconds = Date.now();
+   console.log(`Initial render or Rendering component at ${currentTime}, ${currentMilliseconds} milliseconds`);
+ 
+
+ 
+
+
+
 useEffect(function() {
   localStorage.setItem("watched", JSON.stringify(watched));
 },[watched]);
-
 
   useEffect(
     function () {
@@ -139,7 +159,6 @@ useEffect(function() {
       return function () {
         controller.abort();
       }
-
     },
     [query]
   );
@@ -216,6 +235,10 @@ function Logo() {
 }
 
 function Search({ query, setQuery }) {
+useEffect(function() {
+  const el = document.querySelector(".search");
+   console.log(el);
+},[]);
   return (
     <input
       className="search"
