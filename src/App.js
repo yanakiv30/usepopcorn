@@ -48,8 +48,18 @@ const tempWatchedData = [
 ];
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-const KEY = "69fcf81a";
+
+  let _prevQuery;
+  let _prevMovies;
+  let _prevIsLoading;
+  let _prevError;
+  let _prevSelectedId;
+  let _prevWatched;
+
+  const KEY = "69fcf81a";
 export default function App() {
+
+
   
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
@@ -61,17 +71,7 @@ export default function App() {
     const storedValue = localStorage.getItem("watched") ? 
     JSON.parse(localStorage.getItem("watched")) : [];
     return storedValue;
-  });
-
-  // useEffect(function() {
-  // console.log('After initial render')
-  // },[]);
-  // useEffect(function () {
-  //   console.log('After every render')
-  // });
-
-  // useEffect(()=> console.log('D'),[query]);
-  // console.log('During Render')
+  });  
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -82,35 +82,11 @@ export default function App() {
 
   function handleAddWatch(movie) {
     setWatched((watched) => [...watched, movie]);
-
-    // localStorage.setItem("watched", JSON.stringify([...watched, movie]));
   }
 
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
-  useEffect(() => {
-    const currentTime = new Date().toLocaleTimeString();
-    const currentMilliseconds = Date.now();
-    console.log(`Component is mounted at ${currentTime}, ${currentMilliseconds} milliseconds`);
- 
-   },[]); // Empty dependency array means this effect runs once after the initial render
-
-  useEffect(() => {
-    const currentTime = new Date().toLocaleTimeString();
-    const currentMilliseconds = Date.now();
-    console.log(`Component is render(every) at ${currentTime}, ${currentMilliseconds} milliseconds`);
-  });
-   
-   const currentTime = new Date().toLocaleTimeString();
-   const currentMilliseconds = Date.now();
-   console.log(`Initial render or Rendering component at ${currentTime}, ${currentMilliseconds} milliseconds`);
- 
-
- 
-
-
 
 useEffect(function() {
   localStorage.setItem("watched", JSON.stringify(watched));
@@ -150,7 +126,7 @@ useEffect(function() {
       }
 
       if (query.length < 3) {
-        setMovies([]);
+        // setMovies([]);
         setError("");
         return;
       }
@@ -162,6 +138,39 @@ useEffect(function() {
     },
     [query]
   );
+
+
+  if (query !== _prevQuery) {
+    console.log('query changed:', 'previous:', _prevQuery, 'new:', query);
+  }
+  if (movies !== _prevMovies) {
+    console.log('movies changed:', 'previous:', _prevMovies, 'new:', movies);
+  }
+  if (isLoading !== _prevIsLoading) {
+    console.log('isLoading changed:', 'previous:', _prevIsLoading, 'new:', isLoading);
+  }
+  if (error !== _prevError) {
+    console.log('error changed:', 'previous:', _prevError, 'new:', error);
+  }
+  if (selectedId !== _prevSelectedId) {
+    console.log('selectedId changed:', 'previous:', _prevSelectedId, 'new:', selectedId);
+  }
+  if (watched !== _prevWatched) {
+    console.log('watched changed:', 'previous:', _prevWatched, 'new:', watched);
+  }
+
+  console.log('-----------------------------------------------------');
+
+
+// Update the previous state after checks
+_prevQuery = query;
+_prevMovies = movies;
+_prevIsLoading = isLoading;
+_prevError = error;
+_prevSelectedId = selectedId;
+_prevWatched = watched;
+
+
 
   return (
     <>
@@ -200,7 +209,8 @@ useEffect(function() {
         </Box>
       </Main>
     </>
-  );
+  ); 
+
 }
 
 function Loader() {
@@ -237,7 +247,7 @@ function Logo() {
 function Search({ query, setQuery }) {
 useEffect(function() {
   const el = document.querySelector(".search");
-   console.log(el);
+  //  console.log(el);
 },[]);
   return (
     <input
@@ -323,11 +333,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     Genre: genre,
   } = movie;
 
-  // const isTop= imdbRating>8;
-  // console.log(isTop);
-
-  // const [avgRating, setAvgRating] = useState(0);
-
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -341,22 +346,11 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 
     onAddWatched(newWatchedMovie);
     onCloseMovie();
-
-    // setAvgRating(+imdbRating);
-    // setAvgRating((avgRating) => (avgRating + userRating) / 2);
-
-
-
-
   }
-
-
-
   useEffect(function () {
     function callback(e) {
       if (e.code === 'Escape') {
         onCloseMovie();
-
       }
     }
 
@@ -370,7 +364,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 
   useEffect(
     function () {
-
       async function getMovieDetails() {
         setIsLoading(true);
         const res = await fetch(
@@ -419,11 +412,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
               </p>
             </div>
           </header>
-
-
-
-          {/* <p>{avgRating}</p> */}
-
 
           <section>
             <div className="rating">
