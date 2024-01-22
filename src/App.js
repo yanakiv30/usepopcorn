@@ -48,31 +48,31 @@ const tempWatchedData = [
 ];
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-  let _prevCounter;
-  let _prevQuery;
-  let _prevMovies;
-  let _prevIsLoading;
-  let _prevError;
-  let _prevSelectedId;
-  let _prevWatched;
+let _prevCounter;
+let _prevQuery;
+let _prevMovies;
+let _prevIsLoading;
+let _prevError;
+let _prevSelectedId;
+let _prevWatched;
 
-  const KEY = "69fcf81a";
+const KEY = "69fcf81a";
 export default function App() {
 
 
-  
-  const [query, setQuery] = useState("interstellar");
+
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   // const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-  const [watched, setWatched] = useState(function() {
-    const storedValue = localStorage.getItem("watched") ? 
-    JSON.parse(localStorage.getItem("watched")) : [];
+  const [watched, setWatched] = useState(function () {
+    const storedValue = localStorage.getItem("watched") ?
+      JSON.parse(localStorage.getItem("watched")) : [];
     return storedValue;
-  });  
-  let counter =useRef(1);
+  });
+  let counter = useRef(1);
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -89,13 +89,13 @@ export default function App() {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
-useEffect(function() {
-  counter.current = counter.current +1;
-},[query,watched,movies,isLoading,selectedId,error ]);
+  useEffect(function () {
+    counter.current = counter.current + 1;
+  }, [query, watched, movies, isLoading, selectedId, error]);
 
-useEffect(function() {
-  localStorage.setItem("watched", JSON.stringify(watched));
-},[watched]);
+  useEffect(function () {
+    localStorage.setItem("watched", JSON.stringify(watched));
+  }, [watched]);
 
   useEffect(
     function () {
@@ -131,7 +131,7 @@ useEffect(function() {
       }
 
       if (query.length < 3) {
-        // setMovies([]);
+        setMovies([]);
         setError("");
         return;
       }
@@ -144,39 +144,39 @@ useEffect(function() {
     [query]
   );
 
-  if (counter.current !== _prevCounter) {
-    console.log('counter changed:', 'previous:', _prevCounter, 'new:', counter.current);
-  }
-  if (query !== _prevQuery) {
-    console.log('query changed:', 'previous:', _prevQuery, 'new:', query);
-  }
-  if (movies !== _prevMovies) {
-    console.log('movies changed:', 'previous:', _prevMovies, 'new:', movies);
-  }
-  if (isLoading !== _prevIsLoading) {
-    console.log('isLoading changed:', 'previous:', _prevIsLoading, 'new:', isLoading);
-  }
-  if (error !== _prevError) {
-    console.log('error changed:', 'previous:', _prevError, 'new:', error);
-  }
-  if (selectedId !== _prevSelectedId) {
-    console.log('selectedId changed:', 'previous:', _prevSelectedId, 'new:', selectedId);
-  }
-  if (watched !== _prevWatched) {
-    console.log('watched changed:', 'previous:', _prevWatched, 'new:', watched);
-  }
+  // if (counter.current !== _prevCounter) {
+  //   console.log('counter changed:', 'previous:', _prevCounter, 'new:', counter.current);
+  // }
+  // if (query !== _prevQuery) {
+  //   console.log('query changed:', 'previous:', _prevQuery, 'new:', query);
+  // }
+  // if (movies !== _prevMovies) {
+  //   console.log('movies changed:', 'previous:', _prevMovies, 'new:', movies);
+  // }
+  // if (isLoading !== _prevIsLoading) {
+  //   console.log('isLoading changed:', 'previous:', _prevIsLoading, 'new:', isLoading);
+  // }
+  // if (error !== _prevError) {
+  //   console.log('error changed:', 'previous:', _prevError, 'new:', error);
+  // }
+  // if (selectedId !== _prevSelectedId) {
+  //   console.log('selectedId changed:', 'previous:', _prevSelectedId, 'new:', selectedId);
+  // }
+  // if (watched !== _prevWatched) {
+  //   console.log('watched changed:', 'previous:', _prevWatched, 'new:', watched);
+  // }
 
-  console.log('-----------------------------------------------------');
+  // console.log('-----------------------------------------------------');
 
 
-// Update the previous state after checks
-_prevCounter = counter.current;
-_prevQuery = query;
-_prevMovies = movies;
-_prevIsLoading = isLoading;
-_prevError = error;
-_prevSelectedId = selectedId;
-_prevWatched = watched;
+  // Update the previous state after checks
+  _prevCounter = counter.current;
+  _prevQuery = query;
+  _prevMovies = movies;
+  _prevIsLoading = isLoading;
+  _prevError = error;
+  _prevSelectedId = selectedId;
+  _prevWatched = watched;
 
 
 
@@ -217,7 +217,7 @@ _prevWatched = watched;
         </Box>
       </Main>
     </>
-  ); 
+  );
 
 }
 
@@ -254,14 +254,32 @@ function Logo() {
 
 function Search({ query, setQuery }) {
   const inputEl = useRef(null);
-// useEffect(function() {
-//   const el = document.querySelector(".search");
-//     console.log(el);
-//     el.focus();
-// },[]);
+
+  useEffect(function () {
+    function callback(e) {
+      if (document.activeElement === inputEl.current) return;
 
 
-return (
+      if (e.code === "Enter") {
+        inputEl.current.focus();
+        setQuery('');
+      }
+
+    }
+
+    document.addEventListener("keydown", callback);
+    return () => document.addEventListener("keydown", callback);
+
+  }, [setQuery]);
+
+  // useEffect(function() {
+  //   const el = document.querySelector(".search");
+  //     console.log(el);
+  //     el.focus();
+  // },[]);
+
+
+  return (
     <input
       className="search"
       type="text"
@@ -328,6 +346,12 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
 
+  const countRef = useRef(0);
+
+  useEffect(function () {
+    if (userRating) countRef.current++;
+  }, [userRating]);
+
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
@@ -346,6 +370,10 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     Genre: genre,
   } = movie;
 
+  const isTop = imdbRating > 8;
+  console.log(isTop);
+
+
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -355,6 +383,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       imdbRating: +imdbRating,
       runtime: +runtime.split(" ").at(0),
       userRating,
+      countRatingDecision: countRef.current,
     };
 
     onAddWatched(newWatchedMovie);
