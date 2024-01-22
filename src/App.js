@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import StarRating from "./StarRating";
 const tempMovieData = [
   {
@@ -48,7 +48,7 @@ const tempWatchedData = [
 ];
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-
+  let _prevCounter;
   let _prevQuery;
   let _prevMovies;
   let _prevIsLoading;
@@ -61,7 +61,7 @@ export default function App() {
 
 
   
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("interstellar");
   const [movies, setMovies] = useState([]);
   // const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,6 +72,7 @@ export default function App() {
     JSON.parse(localStorage.getItem("watched")) : [];
     return storedValue;
   });  
+  let counter =useRef(1);
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -87,6 +88,10 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+
+useEffect(function() {
+  counter.current = counter.current +1;
+},[query,watched,movies,isLoading,selectedId,error ]);
 
 useEffect(function() {
   localStorage.setItem("watched", JSON.stringify(watched));
@@ -139,7 +144,9 @@ useEffect(function() {
     [query]
   );
 
-
+  if (counter.current !== _prevCounter) {
+    console.log('counter changed:', 'previous:', _prevCounter, 'new:', counter.current);
+  }
   if (query !== _prevQuery) {
     console.log('query changed:', 'previous:', _prevQuery, 'new:', query);
   }
@@ -163,6 +170,7 @@ useEffect(function() {
 
 
 // Update the previous state after checks
+_prevCounter = counter.current;
 _prevQuery = query;
 _prevMovies = movies;
 _prevIsLoading = isLoading;
@@ -245,17 +253,22 @@ function Logo() {
 }
 
 function Search({ query, setQuery }) {
-useEffect(function() {
-  const el = document.querySelector(".search");
-  //  console.log(el);
-},[]);
-  return (
+  const inputEl = useRef(null);
+// useEffect(function() {
+//   const el = document.querySelector(".search");
+//     console.log(el);
+//     el.focus();
+// },[]);
+
+
+return (
     <input
       className="search"
       type="text"
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl}
     />
   );
 }
